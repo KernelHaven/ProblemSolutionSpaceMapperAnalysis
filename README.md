@@ -76,5 +76,5 @@ analysis.pss_mapper.variable_regex = CONFIG_.*
 Please note that the PSS Mapper plug-in is currently under development and, hence, tested only with this particular configuration.
 
 ## Usage
-The PSS Mapper can be used either as single analysis for providing such a mapping for a particular SPL, or as part of an analysis pipeline. The latter allows to combine this plug-in with the Problem-Solution-Space Divergence Detector to identify unintended divergences between the two spaces.
+The PSS Mapper can be used either as single analysis for providing such a mapping for a particular SPL, or as part of an analysis pipeline. The latter allows to combine this plug-in with the [Problem-Solution-Space Divergence Detector](https://github.com/KernelHaven/ProblemSolutionSpaceDivergenceDetectorAnalysis) to identify unintended divergences between the two spaces.
 
