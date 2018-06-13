@@ -11,10 +11,10 @@ UNDEFINED | Defines a “feature” as not being defined in the variability mode
 ## KernelHaven Setup
 In order to provide a problem-solution-space mapping, the analysis plug-in requires at least a variability model extractor and a code extractor. The build extractor is optional. A particular configuration file for executing this analysis plug-in should contain the following information:
 
-```
-#####################
-#     Directores    #
-#####################
+```Properties
+######################
+#     Directories    #
+######################
 resource_dir = res/
 output_dir = output/
 plugins_dir = plugins/
