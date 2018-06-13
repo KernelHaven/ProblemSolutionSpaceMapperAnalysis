@@ -27,6 +27,7 @@ import net.ssehub.kernel_haven.util.logic.Formula;
 import net.ssehub.kernel_haven.util.logic.VariableFinder;
 import net.ssehub.kernel_haven.util.null_checks.NonNull;
 import net.ssehub.kernel_haven.variability_model.VariabilityModel;
+import net.ssehub.kernel_haven.variability_model.VariabilityModelDescriptor.Attribute;
 import net.ssehub.kernel_haven.variability_model.VariabilityVariable;
 
 /**
@@ -65,7 +66,7 @@ public class ProblemSolutionSpaceMapping {
          * to these variables will be found in build or code artifacts. 
          */
         mappingElements = new HashMap<String, MappingElement>();
-        variableConstraintUsageAvailable = variabilityModel.getDescriptor().hasConstraintUsage();
+        variableConstraintUsageAvailable = variabilityModel.getDescriptor().hasAttribute(Attribute.CONSTRAINT_USAGE);
         Set<VariabilityVariable> variables = variabilityModel.getVariables();
         for (VariabilityVariable variable : variables) {
             mappingElements.put(variable.getName(), new MappingElement(variable));
