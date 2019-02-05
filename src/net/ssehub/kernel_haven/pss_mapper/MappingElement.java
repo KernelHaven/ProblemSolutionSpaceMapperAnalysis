@@ -102,13 +102,13 @@ public class MappingElement {
      * The set of {@link SourceFile}s of this mapping element, which are controlled by the
      * {@link MappingElement#variable}. Can be <i>empty</i>, if no such relation exists.
      */
-    private @NonNull Set<SourceFile> sourceFiles;
+    private @NonNull Set<SourceFile<?>> sourceFiles;
     
     /**
      * The set of {@link CodeElement}s of this mapping element, which are controlled by the 
      * {@link MappingElement#variable}. Can be <i>empty</i>, if no such relation exists.
      */
-    private @NonNull Set<CodeElement> codeElements;
+    private @NonNull Set<CodeElement<?>> codeElements;
     
     /**
      * Constructs a {@link MappingElement} instance.
@@ -121,8 +121,8 @@ public class MappingElement {
         this.variable = variable;
         this.variableName = variable.getName();
         variableState = MappingState.UNUSED;
-        sourceFiles = new HashSet<SourceFile>();
-        codeElements = new HashSet<CodeElement>();
+        sourceFiles = new HashSet<>();
+        codeElements = new HashSet<>();
     }
     
     /**
@@ -136,8 +136,8 @@ public class MappingElement {
         this.variable = null;
         this.variableName = variable;
         variableState = MappingState.UNDEFINED;
-        sourceFiles = new HashSet<SourceFile>();
-        codeElements = new HashSet<CodeElement>();
+        sourceFiles = new HashSet<>();
+        codeElements = new HashSet<>();
     }
     
     /**
@@ -179,7 +179,7 @@ public class MappingElement {
      * @return the set of {@link SourceFile}s controlled by the variable of this mapping element; can be <i>empty</i>,
      *         if no such relation exists
      */
-    public @NonNull Set<SourceFile> getBuildMapping() {
+    public @NonNull Set<SourceFile<?>> getBuildMapping() {
         return sourceFiles;
     }
     
@@ -195,7 +195,7 @@ public class MappingElement {
         String sourceFilesString = "";
         if (!sourceFiles.isEmpty()) {
             StringBuilder sourceFilesStringBuilder = new StringBuilder();
-            for (SourceFile sourceFile : sourceFiles) {
+            for (SourceFile<?> sourceFile : sourceFiles) {
                 sourceFilesStringBuilder.append(sourceFile.getPath().getName());
                 sourceFilesStringBuilder.append(' ');
             }
@@ -211,7 +211,7 @@ public class MappingElement {
      * @return the set of {@link CodeElement}s controlled by the variable of this mapping element; can be <i>empty</i>,
      *         if no such relation exists
      */
-    public @NonNull Set<CodeElement> getCodeMapping() {
+    public @NonNull Set<CodeElement<?>> getCodeMapping() {
         return codeElements;
     }
     
@@ -227,7 +227,7 @@ public class MappingElement {
         String codeElementsString = "";
         if (!codeElements.isEmpty()) {
             StringBuilder codeElementsStringBuilder = new StringBuilder();
-            for (CodeElement codeElement : codeElements) {
+            for (CodeElement<?> codeElement : codeElements) {
                 codeElementsStringBuilder.append(codeElement.getSourceFile().getName()
                         + "[" + codeElement.getLineStart() + ":" + codeElement.getLineEnd() + "]");
                 codeElementsStringBuilder.append(' ');
@@ -253,7 +253,7 @@ public class MappingElement {
      * 
      * @param sourceFile the {@link SourceFile} controlled by the variable of this mapping element
      */
-    public void addBuildMapping(@NonNull SourceFile sourceFile) {
+    public void addBuildMapping(@NonNull SourceFile<?> sourceFile) {
         sourceFiles.add(sourceFile);
         // Do not change UNDEFINED as that state already defines that the variable is used
         if (variableState == MappingState.UNUSED) {
@@ -268,7 +268,7 @@ public class MappingElement {
      * 
      * @param codeElment the {@link CodeElement} controlled by the variable of this mapping element
      */
-    public void addCodeMapping(@NonNull CodeElement codeElment) {
+    public void addCodeMapping(@NonNull CodeElement<?> codeElment) {
         codeElements.add(codeElment);
         // Do not change in state UNDEFINED as that state already defines that the variable is used
         if (variableState == MappingState.UNUSED) {

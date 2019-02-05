@@ -96,7 +96,7 @@ public class ProblemSolutionSpaceMapping {
      *        build and code artifacts; can be <code>null</code> if no such expression is defined by the user, which
      *        leads to including all variables found
      */
-    public void add(@NonNull SourceFile sourceFile, Formula presenceCondition, String variableReferenceRegex) {
+    public void add(@NonNull SourceFile<?> sourceFile, Formula presenceCondition, String variableReferenceRegex) {
         if (presenceCondition != null) {
             updateBuildMapping(sourceFile, presenceCondition, variableReferenceRegex);
         }
@@ -118,7 +118,7 @@ public class ProblemSolutionSpaceMapping {
      *        build and code artifacts; can be <code>null</code> if no such expression is defined by the user, which
      *        leads to including all variables found
      */
-    private void updateBuildMapping(@NonNull SourceFile sourceFile, @NonNull Formula presenceCondition,
+    private void updateBuildMapping(@NonNull SourceFile<?> sourceFile, @NonNull Formula presenceCondition,
             String variableReferenceRegex) {
         // Get all variables used to define the presence condition
         VariableFinder variableFinder = new VariableFinder();
@@ -152,7 +152,7 @@ public class ProblemSolutionSpaceMapping {
      *        build and code artifacts; can be <code>null</code> if no such expression is defined by the user, which
      *        leads to including all variables found
      */
-    public void add(@NonNull SourceFile sourceFile, String variableReferenceRegex) {
+    public void add(@NonNull SourceFile<?> sourceFile, String variableReferenceRegex) {
         updateCodeMapping(sourceFile, variableReferenceRegex);
     }
     
@@ -169,8 +169,8 @@ public class ProblemSolutionSpaceMapping {
      *        build and code artifacts; can be <code>null</code> if no such expression is defined by the user, which
      *        leads to including all variables found
      */
-    private void updateCodeMapping(@NonNull SourceFile sourceFile, String variableReferenceRegex) {
-        for (CodeElement codeElement : sourceFile) {
+    private void updateCodeMapping(@NonNull SourceFile<?> sourceFile, String variableReferenceRegex) {
+        for (CodeElement<?> codeElement : sourceFile) {
             updateCodeMapping(codeElement, variableReferenceRegex);
         }
     }
@@ -189,7 +189,7 @@ public class ProblemSolutionSpaceMapping {
      *        build and code artifacts; can be <code>null</code> if no such expression is defined by the user, which
      *        leads to including all variables found
      */
-    private void updateCodeMapping(CodeElement codeElement, String variableReferenceRegex) {
+    private void updateCodeMapping(CodeElement<?> codeElement, String variableReferenceRegex) {
         if (codeElement != null) {
             Formula codeElementPresenceCondition = codeElement.getPresenceCondition();
             if (codeElementPresenceCondition != null) {
@@ -210,7 +210,7 @@ public class ProblemSolutionSpaceMapping {
                 }
             }
             // Check nested code elements recursively
-            for (CodeElement nestedCodeElement : codeElement.iterateNestedElements()) {
+            for (CodeElement<?> nestedCodeElement : codeElement) {
                 updateCodeMapping(nestedCodeElement, variableReferenceRegex);
             }
         }

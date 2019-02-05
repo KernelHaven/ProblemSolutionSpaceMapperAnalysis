@@ -35,7 +35,7 @@ public class ProblemSolutionSpaceMapper extends AnalysisComponent<MappingElement
     /**
      * The code extractor for providing information from code artifacts.
      */
-    private @NonNull AnalysisComponent<SourceFile> codeExtractor;
+    private @NonNull AnalysisComponent<SourceFile<?>> codeExtractor;
     
     /**
      * The build extractor for providing information from the build system. This extractor may be <code>null</code> if
@@ -67,7 +67,7 @@ public class ProblemSolutionSpaceMapper extends AnalysisComponent<MappingElement
      */
     @SuppressWarnings("deprecation")
     public ProblemSolutionSpaceMapper(@NonNull Configuration config,
-            @NonNull AnalysisComponent<SourceFile> codeExtractor,
+            @NonNull AnalysisComponent<SourceFile<?>> codeExtractor,
             @NonNull AnalysisComponent<BuildModel> buildExtractor,
             @NonNull AnalysisComponent<VariabilityModel> vmExtractor) throws SetUpException {
         super(config);
@@ -89,7 +89,7 @@ public class ProblemSolutionSpaceMapper extends AnalysisComponent<MappingElement
      */
     @SuppressWarnings("deprecation")
     public ProblemSolutionSpaceMapper(@NonNull Configuration config,
-            @NonNull AnalysisComponent<SourceFile> codeExtractor,
+            @NonNull AnalysisComponent<SourceFile<?>> codeExtractor,
             @NonNull AnalysisComponent<VariabilityModel> vmExtractor) throws SetUpException {
         super(config);
         this.codeExtractor = codeExtractor;
@@ -113,7 +113,7 @@ public class ProblemSolutionSpaceMapper extends AnalysisComponent<MappingElement
         
         // Create new mapping using the variability model as baseline input
         ProblemSolutionSpaceMapping mapping = new ProblemSolutionSpaceMapping(variabilityModel);
-        SourceFile codeFile;
+        SourceFile<?> codeFile;
         // Get optional build model: if not available, there will be no build mapping
         if (buildExtractor != null) {
             BuildModel buildModel = buildExtractor.getNextResult();
