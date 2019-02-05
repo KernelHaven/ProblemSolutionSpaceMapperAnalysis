@@ -40,7 +40,7 @@ code.provider.cache.read = false
 code.extractor.class =  net.ssehub.kernel_haven.undertaker.UndertakerExtractor
 code.extractor.files = main
 # Undertaker parses header and code files separately
-code.extractor.file_regex = .*\.(c|h)
+code.extractor.file_regex = .*\\.(c|h)
 code.extractor.threads = 2
 code.extractor.add_linux_source_include_dirs = false
 code.extractor.parse_to_ast = false
