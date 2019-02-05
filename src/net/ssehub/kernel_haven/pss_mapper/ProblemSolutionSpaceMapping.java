@@ -55,6 +55,20 @@ public class ProblemSolutionSpaceMapping {
     private boolean variableConstraintUsageAvailable;
     
     /**
+     * Creates a {@link ProblemSolutionSpaceMapping} instance without a variability model. All found variables
+     * will have the type {@link MappingState#UNDEFINED}.
+     */
+    public ProblemSolutionSpaceMapping() {
+        /*
+         * Initialize the map of VariabilityVariables and associated MappingElements based on the variables defined in
+         * the variability model. The initial state of these variables is UNUSED. This state may change, if references
+         * to these variables will be found in build or code artifacts. 
+         */
+        mappingElements = new HashMap<String, MappingElement>();
+        variableConstraintUsageAvailable = false;
+    }
+    
+    /**
      * Creates a {@link ProblemSolutionSpaceMapping} instance.
      * 
      * @param variabilityModel the {@link VariabilityModel} provided by the respective extractor

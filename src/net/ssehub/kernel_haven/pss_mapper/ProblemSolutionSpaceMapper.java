@@ -19,7 +19,9 @@ import net.ssehub.kernel_haven.analysis.AnalysisComponent;
 import net.ssehub.kernel_haven.build_model.BuildModel;
 import net.ssehub.kernel_haven.code_model.SourceFile;
 import net.ssehub.kernel_haven.config.Configuration;
+import net.ssehub.kernel_haven.pss_mapper.MappingElement.MappingState;
 import net.ssehub.kernel_haven.util.null_checks.NonNull;
+import net.ssehub.kernel_haven.util.null_checks.Nullable;
 import net.ssehub.kernel_haven.variability_model.VariabilityModel;
 
 /**
@@ -51,7 +53,7 @@ public class ProblemSolutionSpaceMapper extends AnalysisComponent<MappingElement
     /**
      * The variability model extractor for providing information from variability model artifacts.
      */
-    private @NonNull AnalysisComponent<VariabilityModel> vmExtractor;
+    private @Nullable AnalysisComponent<VariabilityModel> vmExtractor;
     
     /**
      * Creates a {@link ProblemSolutionSpaceMapper} instance, which considers and, hence, requires information of all
@@ -98,21 +100,46 @@ public class ProblemSolutionSpaceMapper extends AnalysisComponent<MappingElement
         variableReferenceRegex = config.getProperty(VARIABLE_REGEX_PROPERTY);
     }
     
+    /**
+     * Creates a special {@link ProblemSolutionSpaceMapper} which does not have a variability model. This will create
+     * {@link MappingState#UNDEFINED} entries for all variables found in the code model.
+     * 
+     * @param config the global {@link Configuration}
+     * @param codeExtractor a particular code extractor as defined in the properties file for providing code information
+     * 
+     * @throws SetUpException if setting-up this instance failed
+     */
+    @SuppressWarnings("deprecation")
+    public ProblemSolutionSpaceMapper(@NonNull Configuration config,
+            @NonNull AnalysisComponent<SourceFile<?>> codeExtractor) throws SetUpException {
+        super(config);
+        this.codeExtractor = codeExtractor;
+        this.buildExtractor = null;
+        variableReferenceRegex = config.getProperty(VARIABLE_REGEX_PROPERTY);
+    }
+    
     @Override
     protected void execute() {
         // TODO we will not find something like obj-$(CONFIG_ADDITION) := test.o if test.c does not exist
         LOGGER.logInfo2("Using \"" + variableReferenceRegex 
                 + "\" to identify variability model variables in build and code artifacts");
 
-        // Get mandatory variability model
-        VariabilityModel variabilityModel = vmExtractor.getNextResult();
-        if (variabilityModel == null) {
-            LOGGER.logError2("Variability modell is missig but fundamental for creating the mapping");
-            return;
+        ProblemSolutionSpaceMapping mapping;
+        // Get variability model
+        if (vmExtractor != null) {
+            VariabilityModel variabilityModel = vmExtractor.getNextResult();
+            if (variabilityModel == null) {
+                LOGGER.logError2("Variability modell is missig but fundamental for creating the mapping");
+                return;
+            }
+            // Create new mapping using the variability model as baseline input
+            mapping = new ProblemSolutionSpaceMapping(variabilityModel);
+            
+        } else {
+            mapping = new ProblemSolutionSpaceMapping();
+            LOGGER.logWarning("Creating a ProblemSolutionSpaceMapper without a variability model is only useful in a "
+                    + "very few special cases", "You may want to supply a variability model");
         }
-        
-        // Create new mapping using the variability model as baseline input
-        ProblemSolutionSpaceMapping mapping = new ProblemSolutionSpaceMapping(variabilityModel);
         SourceFile<?> codeFile;
         // Get optional build model: if not available, there will be no build mapping
         if (buildExtractor != null) {
@@ -140,7 +167,6 @@ public class ProblemSolutionSpaceMapper extends AnalysisComponent<MappingElement
                 mapping.add(codeFile, variableReferenceRegex);
             }
         }
-        
         /*
          * Try to resolve unused variables, e.g., to avoid false "UNUSED" states due to exclusive usage in the
          * variability model. We can argue here, that the variable is still unused with respect to the mapping to the
@@ -149,10 +175,8 @@ public class ProblemSolutionSpaceMapper extends AnalysisComponent<MappingElement
          * variability model.
          */
         mapping.resolveUnused();
-        
         // Only used for debugging
         mapping.show();
-        
         /*
          * As mapping elements may change as long as processing build and code information has not been finished, we can
          * add the final results only after all build and code artifacts are processed.
