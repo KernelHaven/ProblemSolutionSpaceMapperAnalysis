@@ -12,6 +12,7 @@
  */
 package net.ssehub.kernel_haven.pss_mapper;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -196,9 +197,12 @@ public class MappingElement {
         if (!sourceFiles.isEmpty()) {
             StringBuilder sourceFilesStringBuilder = new StringBuilder();
             for (SourceFile<?> sourceFile : sourceFiles) {
-                sourceFilesStringBuilder.append(sourceFile.getPath().getName());
-                sourceFilesStringBuilder.append(' ');
+                sourceFilesStringBuilder
+                        .append(sourceFile.getPath().getPath().replace(File.separatorChar, '/'))
+                        .append(", ");
             }
+            // remove trailing ", "
+            sourceFilesStringBuilder.delete(sourceFilesStringBuilder.length() - 2, sourceFilesStringBuilder.length());
             sourceFilesString = sourceFilesStringBuilder.toString();
         }
         return sourceFilesString;
@@ -228,10 +232,15 @@ public class MappingElement {
         if (!codeElements.isEmpty()) {
             StringBuilder codeElementsStringBuilder = new StringBuilder();
             for (CodeElement<?> codeElement : codeElements) {
-                codeElementsStringBuilder.append(codeElement.getSourceFile().getName()
-                        + "[" + codeElement.getLineStart() + ":" + codeElement.getLineEnd() + "]");
-                codeElementsStringBuilder.append(' ');
+                codeElementsStringBuilder
+                        .append(codeElement.getSourceFile().getPath().replace(File.separatorChar, '/'))
+                        .append(':')
+                        .append(codeElement.getLineStart())
+                        .append(", ");
             }
+            // remove trailing ", "
+            codeElementsStringBuilder.delete(codeElementsStringBuilder.length() - 2,
+                    codeElementsStringBuilder.length());
             codeElementsString = codeElementsStringBuilder.toString();
         }
         return codeElementsString;
