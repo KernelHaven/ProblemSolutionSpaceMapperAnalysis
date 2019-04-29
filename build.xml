@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- author: Sascha El-Sharkawy -->
+<!-- Author: Adam, Sascha El-Sharkawy -->
 <project name="ProblemSolutionSpaceMapperAnalysis" default="jenkins" basedir=".">
 	<description>Identification of relations between problem and solution space artifacts</description>
 
