@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import net.ssehub.kernel_haven.build_model.BuildModel;
 import net.ssehub.kernel_haven.code_model.CodeElement;
@@ -26,6 +27,7 @@ import net.ssehub.kernel_haven.util.Logger;
 import net.ssehub.kernel_haven.util.logic.Formula;
 import net.ssehub.kernel_haven.util.logic.VariableFinder;
 import net.ssehub.kernel_haven.util.null_checks.NonNull;
+import net.ssehub.kernel_haven.util.null_checks.Nullable;
 import net.ssehub.kernel_haven.variability_model.VariabilityModel;
 import net.ssehub.kernel_haven.variability_model.VariabilityModelDescriptor.Attribute;
 import net.ssehub.kernel_haven.variability_model.VariabilityVariable;
@@ -110,7 +112,8 @@ public class ProblemSolutionSpaceMapping {
      *        build and code artifacts; can be <code>null</code> if no such expression is defined by the user, which
      *        leads to including all variables found
      */
-    public void add(@NonNull SourceFile<?> sourceFile, Formula presenceCondition, String variableReferenceRegex) {
+    public void add(@NonNull SourceFile<?> sourceFile, Formula presenceCondition,
+            @Nullable Pattern variableReferenceRegex) {
         if (presenceCondition != null) {
             updateBuildMapping(sourceFile, presenceCondition, variableReferenceRegex);
         }
@@ -133,7 +136,7 @@ public class ProblemSolutionSpaceMapping {
      *        leads to including all variables found
      */
     private void updateBuildMapping(@NonNull SourceFile<?> sourceFile, @NonNull Formula presenceCondition,
-            String variableReferenceRegex) {
+            @Nullable Pattern variableReferenceRegex) {
         // Get all variables used to define the presence condition
         VariableFinder variableFinder = new VariableFinder();
         variableFinder.visit(presenceCondition);
@@ -166,7 +169,7 @@ public class ProblemSolutionSpaceMapping {
      *        build and code artifacts; can be <code>null</code> if no such expression is defined by the user, which
      *        leads to including all variables found
      */
-    public void add(@NonNull SourceFile<?> sourceFile, String variableReferenceRegex) {
+    public void add(@NonNull SourceFile<?> sourceFile, @Nullable Pattern variableReferenceRegex) {
         updateCodeMapping(sourceFile, variableReferenceRegex);
     }
     
@@ -183,7 +186,7 @@ public class ProblemSolutionSpaceMapping {
      *        build and code artifacts; can be <code>null</code> if no such expression is defined by the user, which
      *        leads to including all variables found
      */
-    private void updateCodeMapping(@NonNull SourceFile<?> sourceFile, String variableReferenceRegex) {
+    private void updateCodeMapping(@NonNull SourceFile<?> sourceFile, @Nullable Pattern variableReferenceRegex) {
         for (CodeElement<?> codeElement : sourceFile) {
             updateCodeMapping(codeElement, variableReferenceRegex);
         }
@@ -203,7 +206,7 @@ public class ProblemSolutionSpaceMapping {
      *        build and code artifacts; can be <code>null</code> if no such expression is defined by the user, which
      *        leads to including all variables found
      */
-    private void updateCodeMapping(CodeElement<?> codeElement, String variableReferenceRegex) {
+    private void updateCodeMapping(CodeElement<?> codeElement, @Nullable Pattern variableReferenceRegex) {
         if (codeElement != null) {
             Formula codeElementPresenceCondition = codeElement.getPresenceCondition();
             if (codeElementPresenceCondition != null) {
@@ -242,13 +245,14 @@ public class ProblemSolutionSpaceMapping {
      * @return a subset list of variable names matching the given regular expression; can be <i>empty</i> if no variable
      *         name is matching the given regular expression
      */
-    public @NonNull List<String> cleanVariableList(@NonNull List<String> variableNames, String variableNameRegex) {
+    public @NonNull List<String> cleanVariableList(@NonNull List<String> variableNames,
+            @Nullable Pattern variableNameRegex) {
         List<String> cleanVariableList = new ArrayList<String>();
-        if (variableNameRegex == null || variableNameRegex.isEmpty()) {
+        if (variableNameRegex == null) {
             cleanVariableList = variableNames;
         } else {
             for (String variableName : variableNames) {
-                if (variableName.matches(variableNameRegex)) {
+                if (variableNameRegex.matcher(variableName).matches()) {
                     cleanVariableList.add(variableName);
                 }
             }

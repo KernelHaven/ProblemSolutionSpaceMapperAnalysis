@@ -13,12 +13,15 @@
 package net.ssehub.kernel_haven.pss_mapper;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import net.ssehub.kernel_haven.SetUpException;
 import net.ssehub.kernel_haven.analysis.AnalysisComponent;
 import net.ssehub.kernel_haven.build_model.BuildModel;
 import net.ssehub.kernel_haven.code_model.SourceFile;
 import net.ssehub.kernel_haven.config.Configuration;
+import net.ssehub.kernel_haven.config.Setting;
+import net.ssehub.kernel_haven.config.Setting.Type;
 import net.ssehub.kernel_haven.pss_mapper.MappingElement.MappingState;
 import net.ssehub.kernel_haven.util.null_checks.NonNull;
 import net.ssehub.kernel_haven.util.null_checks.Nullable;
@@ -32,7 +35,10 @@ import net.ssehub.kernel_haven.variability_model.VariabilityModel;
  */
 public class ProblemSolutionSpaceMapper extends AnalysisComponent<MappingElement> {
     
-    private static final String VARIABLE_REGEX_PROPERTY = "analysis.pss_mapper.variable_regex";
+    private static final Setting<@Nullable Pattern> VARIABLE_REGEX_SETTING = new Setting<>(
+            "analysis.pss_mapper.variable_regex", Type.REGEX, false, null, "This regular expression is used to "
+            + "identify variability variables in code and build model artifacts. If this is not specified, all "
+            + "variables are considerd to be variability variables.");
     
     /**
      * The code extractor for providing information from code artifacts.
@@ -48,7 +54,7 @@ public class ProblemSolutionSpaceMapper extends AnalysisComponent<MappingElement
     /**
      * The regular expression for identifying referenced variability model variables in build and code artifacts.
      */
-    private String variableReferenceRegex;
+    private @Nullable Pattern variableReferenceRegex;
     
     /**
      * The variability model extractor for providing information from variability model artifacts.
@@ -67,7 +73,6 @@ public class ProblemSolutionSpaceMapper extends AnalysisComponent<MappingElement
      *        variability model information
      * @throws SetUpException if setting-up this instance failed
      */
-    @SuppressWarnings("deprecation")
     public ProblemSolutionSpaceMapper(@NonNull Configuration config,
             @NonNull AnalysisComponent<SourceFile<?>> codeExtractor,
             @NonNull AnalysisComponent<BuildModel> buildExtractor,
@@ -76,7 +81,9 @@ public class ProblemSolutionSpaceMapper extends AnalysisComponent<MappingElement
         this.codeExtractor = codeExtractor;
         this.buildExtractor = buildExtractor;
         this.vmExtractor = vmExtractor;
-        variableReferenceRegex = config.getProperty(VARIABLE_REGEX_PROPERTY);
+        
+        config.registerSetting(VARIABLE_REGEX_SETTING);
+        variableReferenceRegex = config.getValue(VARIABLE_REGEX_SETTING);
     }
     
     /**
@@ -89,7 +96,6 @@ public class ProblemSolutionSpaceMapper extends AnalysisComponent<MappingElement
      *        variability model information
      * @throws SetUpException if setting-up this instance failed
      */
-    @SuppressWarnings("deprecation")
     public ProblemSolutionSpaceMapper(@NonNull Configuration config,
             @NonNull AnalysisComponent<SourceFile<?>> codeExtractor,
             @NonNull AnalysisComponent<VariabilityModel> vmExtractor) throws SetUpException {
@@ -97,7 +103,9 @@ public class ProblemSolutionSpaceMapper extends AnalysisComponent<MappingElement
         this.codeExtractor = codeExtractor;
         this.buildExtractor = null;
         this.vmExtractor = vmExtractor;
-        variableReferenceRegex = config.getProperty(VARIABLE_REGEX_PROPERTY);
+        
+        config.registerSetting(VARIABLE_REGEX_SETTING);
+        variableReferenceRegex = config.getValue(VARIABLE_REGEX_SETTING);
     }
     
     /**
@@ -109,20 +117,21 @@ public class ProblemSolutionSpaceMapper extends AnalysisComponent<MappingElement
      * 
      * @throws SetUpException if setting-up this instance failed
      */
-    @SuppressWarnings("deprecation")
     public ProblemSolutionSpaceMapper(@NonNull Configuration config,
             @NonNull AnalysisComponent<SourceFile<?>> codeExtractor) throws SetUpException {
         super(config);
         this.codeExtractor = codeExtractor;
         this.buildExtractor = null;
-        variableReferenceRegex = config.getProperty(VARIABLE_REGEX_PROPERTY);
+        
+        config.registerSetting(VARIABLE_REGEX_SETTING);
+        variableReferenceRegex = config.getValue(VARIABLE_REGEX_SETTING);
     }
     
     @Override
     protected void execute() {
         // TODO we will not find something like obj-$(CONFIG_ADDITION) := test.o if test.c does not exist
-        LOGGER.logInfo2("Using \"" + variableReferenceRegex 
-                + "\" to identify variability model variables in build and code artifacts");
+        LOGGER.logInfo2("Using ", variableReferenceRegex != null ? variableReferenceRegex.pattern() : "null",
+                " to identify variability model variables in build and code artifacts");
 
         ProblemSolutionSpaceMapping mapping;
         // Get variability model
