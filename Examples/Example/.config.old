@@ -1,0 +1,10 @@
+#
+# Automatically generated make config: don't edit
+# ICSE18 - Demo
+#
+CONFIG_CALCULATION=y
+CONFIG_ADDITION=y
+# CONFIG_SUBTRACTION is not set
+CONFIG_LOGGING=y
+CONFIG_LOG_TO_CONSOLE=y
+# CONFIG_LOG_TO_FILE is not set

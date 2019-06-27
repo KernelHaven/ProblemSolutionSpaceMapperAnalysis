@@ -1,0 +1,37 @@
+mainmenu "ICSE18 - Demo"
+
+##############################
+### Selection of Math Demo ###
+##############################
+config CALCULATION
+    boolean "Calculation demo"
+
+choice
+    bool "Mathematical operation selection"
+    depends on CALCULATION
+
+    config ADDITION
+        bool "Addition demo"
+
+    config SUBTRACTION
+        bool "Subtration demo"
+endchoice
+
+#################################
+### Selection of LOGGING Demo ###
+#################################
+
+config LOGGING
+    boolean "Logging demo"
+
+choice
+    bool "Logging mechanism selection"
+    depends on LOGGING
+
+    config LOG_TO_CONSOLE
+        bool "Log to console"
+
+    config LOG_TO_FILE
+        bool "Log to file"
+endchoice
+

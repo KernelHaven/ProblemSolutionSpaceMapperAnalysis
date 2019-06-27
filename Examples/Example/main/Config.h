@@ -1,0 +1,10 @@
+#ifndef CONFIG_H_
+#define CONFIG_H_
+
+#define CONFIG_ADDITION 1
+
+#define CONFIG_DEBUG 1
+#define CONFIG_SUBTRACTION 1
+#define CONFIG_CALCULATION 1
+
+#endif
