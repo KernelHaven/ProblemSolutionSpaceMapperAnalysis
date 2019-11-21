@@ -9,8 +9,9 @@ UNUSED | Defines a feature as being defined in the variability model, but neithe
 UNDEFINED | Defines a “feature” as not being defined in the variability model, but referenced in at least one code or build artifact. As this element is not defined in the variability model, but follows the same naming convention as features, we assume that this element also represents a feature, which is currently missing in the variability model.
 
 ## KernelHaven Setup
-In order to provide a problem-solution-space mapping, the analysis plug-in requires at least a variability model extractor and a code extractor. The build extractor is optional. A particular configuration file for executing this analysis plug-in should contain the following information:
+In order to provide a problem-solution-space mapping, the analysis plug-in requires at least a variability model extractor and a code extractor. The build extractor is optional. Further, this plug-in supports a non-incremental and an incremental analysis variant. The non-incremental variant analyzes a given SPL in its current state completely, while the incremental variant only analyzes the latest changes to it. A KernelHaven configuration file for executing the respective variant of this analysis plug-in should contain the following information.
 
+### Non-Incremental Variant
 ```Properties
 ######################
 #     Directories    #
@@ -73,7 +74,71 @@ analysis.output.type = xlsx
 analysis.pss_mapper.variable_regex = CONFIG_.*
 ```
 
-Please note that the PSS Mapper plug-in is currently under development and, hence, tested only with this particular configuration.
+### Incremental Variant
+```Properties
+######################
+#     Directories    #
+######################
+resource_dir = res/
+output_dir = output/
+plugins_dir = plugins/
+cache_dir = cache/
+archive = false
+source_tree = <TODO: PATH_TO_SPL>
+arch = x86
+
+##################
+#     Logging    #
+##################
+log.dir = log/
+log.console = true
+log.file = true
+log.level = INFO
+
+################################
+#     Code Model Parameters    #
+################################
+code.provider.timeout = 0
+code.provider.cache.write = false
+code.provider.cache.read = false
+code.extractor.class = net.ssehub.kernel_haven.block_extractor.CodeBlockExtractor
+code.extractor.file_regex = .*(\\.c|\\.h|\\.S)
+code.extractor.fuzzy_parsing = true
+code.extractor.add_pseudo_block = false
+
+################################
+#    Build Model Parameters    #
+################################
+build.provider.timeout = 0
+build.provider.cache.write = false
+build.provider.cache.read = false
+build.extractor.class = net.ssehub.kernel_haven.kbuildminer.KbuildMinerExtractor
+
+#######################################
+#     Variability Model Parameters    #
+#######################################
+variability.provider.timeout = 0
+variability.provider.cache.write = false
+variability.provider.cache.read = false
+variability.extractor.class = net.ssehub.kernel_haven.kconfigreader.KconfigReaderExtractor
+
+##############################
+#     Analysis Parameters    #
+##############################
+preparation.class.0 = net.ssehub.kernel_haven.incremental.preparation.IncrementalPreparation
+analysis.class = net.ssehub.kernel_haven.pss_mapper.IncrementalProplemSolutionSpaceMapperAnalysis
+analysis.pss_mapper.variable_regex = CONFIG_.*
+incremental.hybrid_cache.dir = hybrid_cache/
+incremental.input.source_tree_diff = DIFF_FILE_GENERATED_VALUE
+incremental.variability_change_analyzer.execute = true
+incremental.variability_change_analyzer.class = net.ssehub.kernel_haven.incremental.diff.analyzer.ComAnAnalyzer
+incremental.code.filter = net.ssehub.kernel_haven.incremental.preparation.filter.ChangeFilter
+incremental.build.filter = net.ssehub.kernel_haven.incremental.preparation.filter.VariabilityChangeFilter
+incremental.variability.filter = net.ssehub.kernel_haven.incremental.preparation.filter.VariabilityChangeFilter
+cnf.solver = SAT4J
+```
+
+Please note that the PSS Mapper plug-in is currently under development and, hence, tested only with these particular configurations.
 
 ## Usage
 The PSS Mapper can be used either as single analysis for providing such a mapping for a particular SPL, or as part of an analysis pipeline. The latter allows to combine this plug-in with the [Problem-Solution-Space Divergence Detector](https://github.com/KernelHaven/ProblemSolutionSpaceDivergenceDetectorAnalysis) to identify unintended divergences between the two spaces.
