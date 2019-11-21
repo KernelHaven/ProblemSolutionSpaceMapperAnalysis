@@ -34,7 +34,7 @@ import net.ssehub.kernel_haven.variability_model.VariabilityModel;
 /**
  * This class creates {@link ProblemSolutionSpaceMapping}s.
  * 
- * @author Christian Kröher
+ * @author Christian Kröher, Moritz Flöter
  *
  */
 public class IncrementalProblemSolutionSpaceMapper extends AnalysisComponent<MappingElement> {
@@ -109,8 +109,6 @@ public class IncrementalProblemSolutionSpaceMapper extends AnalysisComponent<Map
 			mapping = new ProblemSolutionSpaceMapping();
 		} else {
 			mapping = new ProblemSolutionSpaceMapping(variabilityModel);
-			LOGGER.logWarning("Creating a ProblemSolutionSpaceMapper without a variability model is only useful in a "
-					+ "very few special cases", "You may want to supply a variability model");
 		}
 
 		if (buildModel != null && codeModel != null) {

@@ -10,16 +10,16 @@ import net.ssehub.kernel_haven.util.null_checks.NonNull;
 /**
  * Incremental variant of the  problem solution space mapper analysis.
  * 
- * @author Moritz
+ * @author Moritz Floeter
  */
-public class IncrementalProplemSolutionSpaceMapperAnalysis extends PipelineAnalysis {
+public class IncrementalProblemSolutionSpaceMapperAnalysis extends PipelineAnalysis {
 
     /**
-     * Instantiates a new incremental dead code analysis.
+     * Instantiates a new  IncrementalProblemSolutionSpaceMapperAnalysis
      *
      * @param config the config
      */
-    public IncrementalProplemSolutionSpaceMapperAnalysis(@NonNull Configuration config) {
+    public IncrementalProblemSolutionSpaceMapperAnalysis(@NonNull Configuration config) {
         super(config);
     }
 
