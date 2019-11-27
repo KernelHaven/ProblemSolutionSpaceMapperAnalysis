@@ -100,6 +100,34 @@ public class IncrementalProblemSolutionSpaceMapper extends AnalysisComponent<Map
 
         }
 
+        mapping = createMapping(variabilityModel, buildModel, codeModel);
+        
+        /*
+         * As mapping elements may change as long as processing build and code
+         * information has not been finished, we can add the final results only after
+         * all build and code artifacts are processed.
+         */
+        List<MappingElement> mappingElements = mapping.getElements();
+        if (mappingElements != null) {
+            for (MappingElement element : mappingElements) {
+                addResult(element);
+            }
+        }
+        LOGGER.logInfo2("Mapping with " + mapping.getElements().size() + " elements created");
+    }
+
+    /**
+     * Creates the {@link ProblemSolutionSpaceMapping}.
+     * 
+     * @param variabilityModel The variability model to use. May be <code>null</code>.
+     * @param buildModel The build model to use. May be <code>null</code>.
+     * @param codeModel The code model to use. May be <code>null</code>.
+     * 
+     * @return The created mapping.
+     */
+    private ProblemSolutionSpaceMapping createMapping(VariabilityModel variabilityModel, BuildModel buildModel,
+            Collection<SourceFile<?>> codeModel) {
+        ProblemSolutionSpaceMapping mapping;
         LOGGER.logInfo2("Using ", variableReferenceRegex != null ? variableReferenceRegex.pattern() : "null",
                 " to identify variability model variables in build and code artifacts");
 
@@ -141,21 +169,11 @@ public class IncrementalProblemSolutionSpaceMapper extends AnalysisComponent<Map
          * really "UNUSED" as it is not even used in the variability model.
          */
         mapping.resolveUnused();
+        
         // Only used for debugging
         mapping.show();
         
-        /*
-         * As mapping elements may change as long as processing build and code
-         * information has not been finished, we can add the final results only after
-         * all build and code artifacts are processed.
-         */
-        List<MappingElement> mappingElements = mapping.getElements();
-        if (mappingElements != null) {
-            for (MappingElement element : mappingElements) {
-                addResult(element);
-            }
-        }
-        LOGGER.logInfo2("Mapping with " + mapping.getElements().size() + " elements created");
+        return mapping;
     }
 
     @Override
