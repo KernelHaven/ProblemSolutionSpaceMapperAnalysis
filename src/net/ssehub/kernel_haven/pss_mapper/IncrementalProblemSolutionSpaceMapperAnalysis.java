@@ -15,7 +15,7 @@ import net.ssehub.kernel_haven.util.null_checks.NonNull;
 public class IncrementalProblemSolutionSpaceMapperAnalysis extends PipelineAnalysis {
 
     /**
-     * Instantiates a new  IncrementalProblemSolutionSpaceMapperAnalysis
+     * Instantiates a new  IncrementalProblemSolutionSpaceMapperAnalysis.
      *
      * @param config the config
      */
@@ -31,7 +31,7 @@ public class IncrementalProblemSolutionSpaceMapperAnalysis extends PipelineAnaly
     @Override
     protected AnalysisComponent<?> createPipeline() throws SetUpException {
 
-    	IncrementalProblemSolutionSpaceMapper pssmapper = new IncrementalProblemSolutionSpaceMapper(config,
+        IncrementalProblemSolutionSpaceMapper pssmapper = new IncrementalProblemSolutionSpaceMapper(config,
                 new IncrementalPostExtraction(config, getCmComponent(), getBmComponent(), getVmComponent()));
 
         return pssmapper;
