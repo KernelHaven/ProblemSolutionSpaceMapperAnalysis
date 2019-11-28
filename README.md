@@ -8,6 +8,10 @@ UNMAPPED | Defines a feature as being defined in the variability model and used 
 UNUSED | Defines a feature as being defined in the variability model, but neither used there as part of constraints nor referenced in any code or build artifact.
 UNDEFINED | Defines a “feature” as not being defined in the variability model, but referenced in at least one code or build artifact. As this element is not defined in the variability model, but follows the same naming convention as features, we assume that this element also represents a feature, which is currently missing in the variability model.
 
+## Tutorials
+* [Basic Video Tutorial](https://www.youtube.com/watch?v=gpBT9wiDRhE)
+* [Incremental Variant Slide Tutorial](https://github.com/KernelHaven/ProblemSolutionSpaceMapperAnalysis/blob/master/Tutorials/PSS-CE%20Incremental%20Tutorial.pdf)
+
 ## KernelHaven Setup
 In order to provide a problem-solution-space mapping, the analysis plug-in requires at least a variability model extractor and a code extractor. The build extractor is optional. Further, this plug-in supports a non-incremental and an incremental analysis variant. The non-incremental variant analyzes a given SPL in its current state completely, while the incremental variant only analyzes the latest changes to it. A KernelHaven configuration file for executing the respective variant of this analysis plug-in should contain the following information.
 
@@ -84,7 +88,7 @@ output_dir = output/
 plugins_dir = plugins/
 cache_dir = cache/
 archive = false
-source_tree = <TODO: PATH_TO_SPL>
+source_tree = <TODO: PATH_TO_EMPTY_DIR>
 arch = x86
 
 ##################
@@ -125,11 +129,15 @@ variability.extractor.class = net.ssehub.kernel_haven.kconfigreader.KconfigReade
 ##############################
 #     Analysis Parameters    #
 ##############################
-preparation.class.0 = net.ssehub.kernel_haven.incremental.preparation.IncrementalPreparation
-analysis.class = net.ssehub.kernel_haven.pss_mapper.IncrementalProplemSolutionSpaceMapperAnalysis
+analysis.class = net.ssehub.kernel_haven.analysis.ConfiguredPipelineAnalysis
+analysis.pipeline = net.ssehub.kernel_haven.pss_mapper.ProblemSolutionSpaceMapper(cmComponent(), bmComponent(), vmComponent())
+analysis.output.type = xlsx
 analysis.pss_mapper.variable_regex = CONFIG_.*
-incremental.hybrid_cache.dir = hybrid_cache/
-incremental.input.source_tree_diff = <TODO: DIFF_FILE>
+
+# Incremental extension setup
+preparation.class.0 = net.ssehub.kernel_haven.incremental.preparation.IncrementalPreparation
+incremental.hybrid_cache.dir = <TODO: PATH_TO_EMPTY_DIR>
+incremental.input.source_tree_diff = <TODO: PATH_TO_GIT_DIFF_FILE>
 incremental.variability_change_analyzer.execute = true
 incremental.variability_change_analyzer.class = net.ssehub.kernel_haven.incremental.diff.analyzer.ComAnAnalyzer
 incremental.code.filter = net.ssehub.kernel_haven.incremental.preparation.filter.ChangeFilter
@@ -143,3 +151,8 @@ Please note that the PSS Mapper plug-in is currently under development and, henc
 ## Usage
 The PSS Mapper can be used either as single analysis for providing such a mapping for a particular SPL, or as part of an analysis pipeline. The latter allows to combine this plug-in with the [Problem-Solution-Space Divergence Detector](https://github.com/KernelHaven/ProblemSolutionSpaceDivergenceDetectorAnalysis) to identify unintended divergences between the two spaces.
 
+## License
+This plug-in is licensed under the Apache License 2.0.
+
+## Acknowledgments
+This work is partially supported by the ITEA3 project [REVaMP2](http://www.revamp2-project.eu/), funded by the BMBF (German Ministry of Research and Education) under grant 01IS16042H.
