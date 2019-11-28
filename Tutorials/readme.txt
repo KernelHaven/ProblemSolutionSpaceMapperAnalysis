@@ -1,0 +1,1 @@
+This directory contains tutorials for the entire Problem-Solution-Space Co-Evolution (PSS-CE) support tool, which consists not only of this mapper, but also of the DivergenceDetector and DivergenceCorrector analysis. These analyses are developed as separate KernelHaven plug-ins, which can be found as part of the KernelHaven organisation overview page.
